@@ -6,7 +6,6 @@ export class AuthService {
   constructor(private jwtService: JwtService) {}
 
   async generateToken(payload: any) {
-    console.log(payload);
     return this.jwtService.sign(payload);
   }
 

@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Job } from 'src/employer/entities/job.entity';
+import { Repository } from 'typeorm';
 
 
 @Injectable()
 export class EmployeeService {
 
+  constructor(@InjectRepository(Job) private jobRepository:Repository<Job>){}
+
   applyForJob() {
     return 'This action for create a job application';
   }
 
-  findAllJobPost() {
-    return `This action returns all Posted jobs`;
+  async findAllJobPost() {
+   const data = await this.jobRepository.find();
+   return data;
   }
 
   // filterJobs(id: number) {
@@ -20,8 +26,8 @@ export class EmployeeService {
   //   return `This action sort the Jobs`;
   // }
 
-  resumeUpload() {
-    return `This action Upload the resume`;
+  resumeUpload(filepath:string,email:string) {
+    return 'save';
   }
 
   craeteProfile(){

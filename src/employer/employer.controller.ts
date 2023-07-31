@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { EmployerService } from './employer.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EmployerDto } from './dto/employer.dto';
+import {JobDto } from './dto/job.dto';
 import {JwtAuthGuard}  from '../auth/auth.guard';
 import { RoleGuard } from 'src/auth/role.guard';
 import Role from 'src/constant';
+import {Request} from 'express'
+import { UpdateJobDto } from './dto/updatejob.dto';
 
 @Controller('employeer')
 @ApiBearerAuth()
@@ -15,18 +17,22 @@ export class EmployerController {
 
 
   @Post('job')
-  createjob(@Body() employerDto: EmployerDto) {
-    return this.employerService.createjob(employerDto);
+  createjob(@Body() jobDto: JobDto, @Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employerService.createjob(jobDto,email);
   }
 
   @Patch('job/:id')
-  updatejob(@Param('id') id: string) {
-    return this.employerService.updatejob(+id);
+  updatejob(@Param('id') jobid: string,@Body() updateJobDto: UpdateJobDto, @Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employerService.updatejob(updateJobDto,jobid,email);
   }
 
   @Delete('job/:id')
   removejob(@Param('id') id: string) {
-    return this.employerService.removejob(+id);
+    return this.employerService.removejob(id);
   }
 
   @Post('job/accept')

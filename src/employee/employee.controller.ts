@@ -1,11 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UploadedFile,
+  UseInterceptors,
+  Req,
+} from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import {ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { RoleGuard } from 'src/auth/role.guard';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
+import Role from 'src/constant';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { Request } from 'express';
+import { EmployerService } from 'src/employer/employer.service';
+
 
 @Controller('employee')
 @ApiTags('employee')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, new RoleGuard(Role.Employee))
 export class EmployeeController {
-
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post('/profile')
@@ -28,19 +48,35 @@ export class EmployeeController {
     return this.employeeService.applyForJob();
   }
 
-  // @Get('filter/:id')
-  // filterJobs(@Param('id') id: string) {
-  //   return this.employeeService.filterJobs(+id);
-  // }
-
-  // @Get('')
-  // sortJobs(@Param('id') id: string) {
-  //   return this.employeeService.sortJobs(+id);
-  // }
 
   @Post('resume')
-  resumeUpload() {
-    return this.employeeService.resumeUpload();
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: function (req, file, cb) {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
+  resumeUpload(@UploadedFile() file: Express.Multer.File, @Req() req : Request) {
+    const user: any = req.user;
+    const email = user.email;
+    const filepath = file.path;
+    return this.employeeService.resumeUpload(filepath, email);
   }
 
   @Get('jobstatus/:id')

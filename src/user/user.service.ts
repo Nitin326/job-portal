@@ -46,15 +46,12 @@ export class UserService {
 
       const isMatch = await bcrypt.compare(loginDto.password, user.password);
 
-      console.log(isMatch);
-
       if (isMatch) {
         const token = await this.authService.generateToken({
           email: user.email,
           role: user.role,
           id: user.id,
         });
-        console.log(token);
         return {
           token: token,
           status: 200,

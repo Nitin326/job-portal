@@ -2,7 +2,6 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Education } from "./eduction.entity";
 import { WorkExperience } from "./workexperience.entity";
 import { Projects } from "./projects.entity";
-import { Job } from "src/employer/entities/job.entity";
 
 
 @Entity()
@@ -34,9 +33,6 @@ export class Employee {
 
     @OneToMany(() => Projects, projects => projects.employee)
     projects:Projects[];
-
-    @OneToMany(() => Job, job => job.employee)
-    jobApplication:Job[]
 
     @Column({type:'varchar'})
     location:string;
