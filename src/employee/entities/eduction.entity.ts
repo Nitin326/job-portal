@@ -8,15 +8,14 @@ import { Employee } from "./employee.entity";
 export class Education {
 
     @IsString()
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id:string;
 
     @IsString()
     @ApiProperty()
     @Column()
-    name: string;
+    eduname: string;
 
-    @IsString()
     @ApiProperty()
     @Column()
     percentage:string;

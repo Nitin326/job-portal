@@ -1,46 +1,46 @@
-import { ApiBody, ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { ApiBody, ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { EducationDto } from './education.dto';
+import { Exclude, Type } from 'class-transformer';
+import { WorkExperienceDto } from './workExperience.dto';
+import { ProjectsDto } from './projects.dto';
 
 export class CreateEmployeeDto {
+  @IsString()
+  @ApiProperty()
+  name: string;
 
-    @IsString()
-    @ApiProperty()
-    name: string;
+  @IsEmail()
+  @ApiProperty()
+  @Exclude()
+  email: string;
 
-    @IsString()
-    @ApiProperty()
-    role: string;
+  @IsString()
+  @ApiProperty()
+  phone: string;
 
-    @IsEmail()
-    @ApiProperty()
-    email: string;
+  @ApiProperty({ type: [EducationDto] })
+  @ValidateNested({ each: true })
+  @Type(() => EducationDto)
+  education: EducationDto[];
 
-    @IsString()
-    @ApiProperty()
-    password: string;
+  @ApiProperty({ type: [WorkExperienceDto] })
+  @ValidateNested({ each: true })
+  @Type(() => WorkExperienceDto)
+  workExperience: WorkExperienceDto[];
 
-    @IsString()
-    @ApiProperty()
-    phone: string;
+  @ApiProperty({ type: [ProjectsDto] })
+  @ValidateNested({ each: true })
+  @Type(() => ProjectsDto)
+  projects: ProjectsDto[];
 
-    @IsString()
-    @ApiProperty()
-    education: string;
+  @IsString()
+  @ApiProperty()
+  location: string;
 
-    @IsString()
-    @ApiProperty()
-    workexp: string;
-
-    @IsString()
-    @ApiProperty()
-    project: string;
-
-    @IsBoolean()
-    @ApiProperty()
-    jobapplied: boolean;
-
-    @IsString()
-    @ApiProperty()
-    location: string;
 }
-

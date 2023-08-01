@@ -46,14 +46,18 @@ export class EmployerService {
     return this.jobRepository.save(job);
   }
 
-  async removejob(jobId: string) {
+  async removejob(jobId: string,email: string) {
     const job = await this.jobRepository.findOneBy({ id: jobId });
 
     if (!job) {
       throw new NotFoundException('Job not found');
     }
 
-    await this.jobRepository.remove(job);
+    if (job.email === email) {
+      await this.jobRepository.remove(job);
+    } else {
+      return { status: 403, message: 'Unable to access job' };
+    }
   }
 
   acceptproposal() {

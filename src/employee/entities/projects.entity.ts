@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsString } from "class-validator";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Employee } from "./employee.entity";
 
@@ -8,15 +8,14 @@ import { Employee } from "./employee.entity";
 export class Projects {
 
     @IsString()
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id:string;
 
     @IsString()
     @ApiProperty()
     @Column()
-    name: string;
+    projectname: string;
 
-    @IsString()
     @ApiProperty()
     @Column()
     duration:string;
@@ -38,5 +37,4 @@ export class Projects {
 
     @ManyToOne(() => Employee, employee => employee.projects)
     employee:Employee;
-
 }

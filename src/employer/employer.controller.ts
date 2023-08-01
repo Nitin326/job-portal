@@ -31,8 +31,10 @@ export class EmployerController {
   }
 
   @Delete('job/:id')
-  removejob(@Param('id') id: string) {
-    return this.employerService.removejob(id);
+  removejob(@Param('id') id: string,@Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employerService.removejob(id,email);
   }
 
   @Post('job/accept')

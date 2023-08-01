@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString } from "class-validator";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity } from "./base.entity";
+import { Employee } from "src/employee/entities/employee.entity";
 
 
 @Entity()
@@ -43,5 +45,8 @@ export class Job extends BaseEntity {
     @ApiProperty()
     @Column()
     technology:string;
+
+    @ManyToOne(() => Employee, employee => employee.jobs)
+    employee:Employee;
 
 }

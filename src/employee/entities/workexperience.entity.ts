@@ -14,7 +14,7 @@ export class WorkExperience {
     @IsString()
     @ApiProperty()
     @Column()
-    name: string;
+    workexpname: string;
 
     @IsString()
     @ApiProperty()

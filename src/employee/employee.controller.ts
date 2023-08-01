@@ -4,11 +4,11 @@ import {
   Post,
   Patch,
   Param,
-  Delete,
   UseGuards,
   UploadedFile,
   UseInterceptors,
   Req,
+  Body,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -18,7 +18,7 @@ import Role from 'src/constant';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Request } from 'express';
-import { EmployerService } from 'src/employer/employer.service';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
 
 
 @Controller('employee')
@@ -29,8 +29,8 @@ export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post('/profile')
-  craeteProfile() {
-    return this.employeeService.craeteProfile();
+  craeteProfile(@Body() createEmployeeDto : CreateEmployeeDto,@Req() req : Request) {
+    return this.employeeService.craeteProfile(createEmployeeDto);
   }
 
   @Patch('profile/:id')
