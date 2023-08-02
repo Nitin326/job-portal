@@ -46,7 +46,7 @@ export class Job extends BaseEntity {
     @Column()
     technology:string;
 
-    @ManyToOne(() => Employee, employee => employee.jobs)
-    employee:Employee;
+    // @ManyToOne(() => Employee, employee => employee.jobs)
+    // employee:Employee;
 
 }

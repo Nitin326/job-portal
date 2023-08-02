@@ -19,6 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Request } from 'express';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
 
 @Controller('employee')
@@ -30,12 +31,18 @@ export class EmployeeController {
 
   @Post('/profile')
   craeteProfile(@Body() createEmployeeDto : CreateEmployeeDto,@Req() req : Request) {
-    return this.employeeService.craeteProfile(createEmployeeDto);
+    const user: any = req.user;
+    const email = user.email;
+    const name = user.name;
+    return this.employeeService.craeteProfile(createEmployeeDto,email,name);
   }
 
   @Patch('profile/:id')
-  updateProfile(@Param('id') id: string) {
-    return this.employeeService.updateProfile(+id);
+  updateProfile(@Param('id') id: string,@Body() updateEmployeeDto : UpdateEmployeeDto,@Req() req : Request) {
+    const user: any = req.user;
+    const email = user.email;
+    const name = user.name;
+    return this.employeeService.updateProfile(id,updateEmployeeDto,email,name);
   }
 
   @Get('alljobs')

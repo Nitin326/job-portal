@@ -51,6 +51,7 @@ export class UserService {
           email: user.email,
           role: user.role,
           id: user.id,
+          name: user.name
         });
         return {
           token: token,

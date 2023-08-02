@@ -34,7 +34,7 @@ export class Employee extends BaseEntity{
     @Column({type:'varchar'})
     location:string;
 
-    @OneToMany(() => Job, job => job.employee, { cascade: true })
-    jobs:Job[];
+    // @OneToMany(() => Job, job => job.employee, { cascade: true })
+    // jobs:Job[];
 
 }

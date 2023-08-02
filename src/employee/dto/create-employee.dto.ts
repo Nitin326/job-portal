@@ -1,5 +1,6 @@
 import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import {
+    IsArray,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -11,12 +12,12 @@ import { WorkExperienceDto } from './workExperience.dto';
 import { ProjectsDto } from './projects.dto';
 
 export class CreateEmployeeDto {
+
   @IsString()
-  @ApiProperty()
+  @Exclude()
   name: string;
 
   @IsEmail()
-  @ApiProperty()
   @Exclude()
   email: string;
 
@@ -25,16 +26,19 @@ export class CreateEmployeeDto {
   phone: string;
 
   @ApiProperty({ type: [EducationDto] })
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => EducationDto)
   education: EducationDto[];
 
   @ApiProperty({ type: [WorkExperienceDto] })
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => WorkExperienceDto)
   workExperience: WorkExperienceDto[];
 
   @ApiProperty({ type: [ProjectsDto] })
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProjectsDto)
   projects: ProjectsDto[];

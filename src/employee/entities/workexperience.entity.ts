@@ -8,7 +8,7 @@ import { Employee } from "./employee.entity";
 export class WorkExperience {
 
     @IsString()
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id:string;
 
     @IsString()
