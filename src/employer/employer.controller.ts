@@ -37,6 +37,20 @@ export class EmployerController {
     return this.employerService.removejob(id,email);
   }
 
+  @Get('alljob')
+  allJobs(@Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employerService.allJobs(email);
+  }
+
+  @Get('job/:id')
+  getJob(@Req() req: Request, @Param('id') id: string) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employerService.getJob(id,email);
+  }
+
   @Post('job/accept')
   acceptproposal() {
     return this.employerService.acceptproposal();

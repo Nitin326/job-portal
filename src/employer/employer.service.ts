@@ -9,7 +9,7 @@ import { UpdateJobDto } from './dto/updatejob.dto';
 export class EmployerService {
   constructor(@InjectRepository(Job) private jobRepository: Repository<Job>) {}
 
-  createjob(jobDto: JobDto, email: string) {
+  async createjob(jobDto: JobDto, email: string) {
     const newDto = new JobDto();
 
     newDto.email = email;
@@ -20,7 +20,7 @@ export class EmployerService {
     newDto.yearofexp = jobDto.yearofexp;
     newDto.technology = jobDto.technology;
 
-    return this.jobRepository.save(newDto);
+    return await this.jobRepository.save(newDto);
   }
 
   async updatejob(updateJobDto: UpdateJobDto, jobid: string, email: string) {
@@ -43,7 +43,7 @@ export class EmployerService {
     job.yearofexp = updateJobDto.yearofexp;
     job.technology = updateJobDto.technology;
 
-    return this.jobRepository.save(job);
+    return await this.jobRepository.save(job);
   }
 
   async removejob(jobId: string,email: string) {
@@ -58,6 +58,23 @@ export class EmployerService {
     } else {
       return { status: 403, message: 'Unable to access job' };
     }
+  }
+
+  async allJobs(email: string) {
+    return await this.jobRepository.find({where:{ email: email}});
+  }
+
+  async getJob(jobId: string, email: string) {
+    const job = await this.jobRepository.findOneBy({ id: jobId });
+
+    if(!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    if(job.email !== email) {
+      return { status: 403, message: 'Unable to access job' };
+    }
+    return job;
   }
 
   acceptproposal() {

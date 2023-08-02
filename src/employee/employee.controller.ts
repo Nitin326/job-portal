@@ -9,9 +9,16 @@ import {
   UseInterceptors,
   Req,
   Body,
+  Query,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import Role from 'src/constant';
@@ -21,7 +28,6 @@ import { Request } from 'express';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
-
 @Controller('employee')
 @ApiTags('employee')
 @ApiBearerAuth()
@@ -30,31 +36,53 @@ export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post('/profile')
-  craeteProfile(@Body() createEmployeeDto : CreateEmployeeDto,@Req() req : Request) {
+  craeteProfile(
+    @Body() createEmployeeDto: CreateEmployeeDto,
+    @Req() req: Request,
+  ) {
     const user: any = req.user;
     const email = user.email;
     const name = user.name;
-    return this.employeeService.craeteProfile(createEmployeeDto,email,name);
+    return this.employeeService.craeteProfile(createEmployeeDto, email, name);
   }
 
   @Patch('profile/:id')
-  updateProfile(@Param('id') id: string,@Body() updateEmployeeDto : UpdateEmployeeDto,@Req() req : Request) {
+  updateProfile(
+    @Param('id') id: string,
+    @Body() updateEmployeeDto: UpdateEmployeeDto,
+    @Req() req: Request,
+  ) {
     const user: any = req.user;
     const email = user.email;
     const name = user.name;
-    return this.employeeService.updateProfile(id,updateEmployeeDto,email,name);
+    return this.employeeService.updateProfile(
+      id,
+      updateEmployeeDto,
+      email,
+      name,
+    );
   }
 
+  @ApiQuery({ name: 'position', required: false, type: String })
+  @ApiQuery({ name: 'companyname', required: false, type: String })
+  @ApiQuery({ name: 'technology', required: false, type: String })
   @Get('alljobs')
-  findAllJobPost() {
-    return this.employeeService.findAllJobPost();
+  findAllJobPost(
+    @Query('position') position: string,
+    @Query('companyname') companyname: string,
+    @Query('technology') technology: string,
+  ) {
+    return this.employeeService.findAllJobPost(
+      position,
+      companyname,
+      technology,
+    );
   }
 
   @Post('apply')
   applyForJob() {
     return this.employeeService.applyForJob();
   }
-
 
   @Post('resume')
   @ApiConsumes('multipart/form-data')
@@ -79,7 +107,7 @@ export class EmployeeController {
       }),
     }),
   )
-  resumeUpload(@UploadedFile() file: Express.Multer.File, @Req() req : Request) {
+  resumeUpload(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
     const filepath = file.path;

@@ -10,7 +10,7 @@ import { AuthService } from 'src/auth/auth.service';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(Signup) private signupRepository: Repository<Signup>,
+    @InjectRepository(Signup) private userRepository : Repository<Signup>,
     private authService: AuthService,
   ) {}
 
@@ -27,8 +27,12 @@ export class UserService {
     newDto.password = hashpassword;
 
     try {
-      await this.signupRepository.save(newDto);
-      return { status: 201, message: 'User Registered Successfully' };
+      const user = await this.userRepository.findOneBy({email: email});
+      if(!user){
+        await this.userRepository.save(newDto);
+        return { status: 201, message: 'User Registered Successfully' };
+      }
+      return { status: 403, message: 'Email Already Exist' };
     } catch (err) {
       return err;
     }
@@ -36,7 +40,7 @@ export class UserService {
 
   async login(loginDto: LoginDto) {
     try {
-      const user = await this.signupRepository.findOneBy({
+      const user = await this.userRepository.findOneBy({
         email: loginDto.email,
       });
 

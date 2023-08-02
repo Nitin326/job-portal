@@ -30,18 +30,20 @@ export class EmployeeService {
     return 'This action for create a job application';
   }
 
-  async findAllJobPost() {
-    const data = await this.jobRepository.find();
-    return data;
+  async findAllJobPost(position:string,companyname:string,technology:string) {
+    const jobs = await this.jobRepository.find();
+    let filteredjobs = jobs;
+    if(position){
+      filteredjobs = filteredjobs.filter(job => job.position === position)
+    }
+    if(companyname){
+      filteredjobs = filteredjobs.filter(job => job.companyname === companyname)
+    }
+    if(technology){
+      filteredjobs = filteredjobs.filter(job => job.technology === technology)
+    }
+    return filteredjobs;
   }
-
-  // filterJobs(id: number) {
-  //   return `This action filter the jobs`;
-  // }
-
-  // sortJobs(id: number) {
-  //   return `This action sort the Jobs`;
-  // }
 
   resumeUpload(filepath: string, email: string) {
     return 'save';
@@ -84,37 +86,37 @@ export class EmployeeService {
     emp.email = email;
     emp.phone = updateEmployeeDto.phone;
 
-    if (emp.education) {
+    if (updateEmployeeDto.education) {
       emp.education.forEach((edu, index) => {
         if (updateEmployeeDto.education[index]) {
-          edu.course = updateEmployeeDto.education[index].course;
-          edu.duration = updateEmployeeDto.education[index].duration;
-          edu.eduname = updateEmployeeDto.education[index].eduname;
-          edu.percentage = updateEmployeeDto.education[index].percentage;
+          if(updateEmployeeDto.education[index].course){edu.course = updateEmployeeDto.education[index].course;}
+          if(updateEmployeeDto.education[index].duration){edu.duration = updateEmployeeDto.education[index].duration;}
+          if(updateEmployeeDto.education[index].eduname){edu.eduname = updateEmployeeDto.education[index].eduname;}
+          if(updateEmployeeDto.education[index].percentage){edu.percentage = updateEmployeeDto.education[index].percentage;}
         }
       });
     }
 
-    if (emp.workExperience) {
+    if (updateEmployeeDto.workExperience) {
       emp.workExperience.forEach((woekexp, index) => {
         if (updateEmployeeDto.workExperience[index]) {
-          woekexp.description = updateEmployeeDto.workExperience[index].description;
-          woekexp.duration = updateEmployeeDto.workExperience[index].duration;
-          woekexp.role = updateEmployeeDto.workExperience[index].role;
-          woekexp.technology = updateEmployeeDto.workExperience[index].technology;
-          woekexp.workexpname = updateEmployeeDto.workExperience[index].workexpname;
+          if(updateEmployeeDto.workExperience[index].description){woekexp.description = updateEmployeeDto.workExperience[index].description;}
+          if(updateEmployeeDto.workExperience[index].duration){woekexp.duration = updateEmployeeDto.workExperience[index].duration;}
+          if(updateEmployeeDto.workExperience[index].role){woekexp.role = updateEmployeeDto.workExperience[index].role;}
+          if(updateEmployeeDto.workExperience[index].technology){woekexp.technology = updateEmployeeDto.workExperience[index].technology;}
+          if(updateEmployeeDto.workExperience[index].workexpname){woekexp.workexpname = updateEmployeeDto.workExperience[index].workexpname;}
         }
       });
     }
 
-    if (emp.projects) {
+    if (updateEmployeeDto.projects) {
       emp.projects.forEach((project, index) => {
-        if (updateEmployeeDto.education[index]) {
-          project.description = updateEmployeeDto.projects[index].description;
-          project.duration = updateEmployeeDto.projects[index].duration;
-          project.projectname = updateEmployeeDto.projects[index].projectname;
-          project.links = updateEmployeeDto.projects[index].links;
-          project.technology = updateEmployeeDto.projects[index].technology;
+        if (updateEmployeeDto.projects[index]) {
+          if(updateEmployeeDto.projects[index].description){project.description = updateEmployeeDto.projects[index].description;}
+          if(updateEmployeeDto.projects[index].duration){project.duration = updateEmployeeDto.projects[index].duration;}
+          if(updateEmployeeDto.projects[index].projectname){project.projectname = updateEmployeeDto.projects[index].projectname};
+          if(updateEmployeeDto.projects[index].links){project.links = updateEmployeeDto.projects[index].links;}
+          if(updateEmployeeDto.projects[index].technology){project.technology = updateEmployeeDto.projects[index].technology};
         }
       });
     }
