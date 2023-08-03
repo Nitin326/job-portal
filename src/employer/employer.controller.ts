@@ -20,14 +20,16 @@ export class EmployerController {
   createjob(@Body() jobDto: JobDto, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
-    return this.employerService.createjob(jobDto,email);
+    const name = user.name;
+    return this.employerService.createjob(jobDto,email,name);
   }
 
   @Patch('job/:id')
   updatejob(@Param('id') jobid: string,@Body() updateJobDto: UpdateJobDto, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
-    return this.employerService.updatejob(updateJobDto,jobid,email);
+    const name = user.name;
+    return this.employerService.updatejob(updateJobDto,jobid,email,name);
   }
 
   @Delete('job/:id')
@@ -51,13 +53,15 @@ export class EmployerController {
     return this.employerService.getJob(id,email);
   }
 
-  @Post('job/accept')
-  acceptproposal() {
-    return this.employerService.acceptproposal();
+  @Post('job/accept/:jobId/:empId')
+  acceptproposal(@Param('jobId') jobid: string,@Param('empId') empid: string) {
+    return this.employerService.acceptproposal(jobid,empid);
   }
 
-  @Get('job/status')
-  proposalview() {
-    return this.employerService.proposalview();
+  @Get('job/status/:id')
+  proposalview(@Param('id') id: string,@Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employerService.proposalview(id,email);
   }
 }

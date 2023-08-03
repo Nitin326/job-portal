@@ -79,9 +79,11 @@ export class EmployeeController {
     );
   }
 
-  @Post('apply')
-  applyForJob() {
-    return this.employeeService.applyForJob();
+  @Post('apply/:id')
+  applyForJob(@Param('id') id: string, @Req() req : Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employeeService.applyForJob(id,email);
   }
 
   @Post('resume')
@@ -107,15 +109,25 @@ export class EmployeeController {
       }),
     }),
   )
+
   resumeUpload(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
-    const filepath = file.path;
-    return this.employeeService.resumeUpload(filepath, email);
+    const filename = file.path.slice(8);
+    return this.employeeService.resumeUpload(filename, email);
+  }
+
+  @Get('appliedjobs')
+  allAppliedJobs( @Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employeeService.allAppliedJobs(email);
   }
 
   @Get('jobstatus/:id')
-  jobStatus(@Param('id') id: string) {
-    return this.employeeService.jobStatus(+id);
+  jobStatus(@Param('empid') empid: string, @Req() req: Request) {
+    const user: any = req.user;
+    const email = user.email;
+    return this.employeeService.jobStatus(empid,email);
   }
 }

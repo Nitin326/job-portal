@@ -8,9 +8,10 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Projects } from './entities/projects.entity';
 import { Education } from './entities/eduction.entity';
 import { WorkExperience } from './entities/workexperience.entity';
-import { EducationDto } from './dto/education.dto';
-import { ProjectsDto } from './dto/projects.dto';
-// import { Project } from './entities/projects.entity';
+
+import { Resume } from './entities/resume.entity';
+import { ResumeDto } from './dto/resume.dto';
+import { JobApplication } from './entities/jobapplication.entity';
 
 @Injectable()
 export class EmployeeService {
@@ -24,29 +25,45 @@ export class EmployeeService {
     private educationRepository: Repository<Education>,
     @InjectRepository(WorkExperience)
     private workexpRepository: Repository<WorkExperience>,
+    @InjectRepository(Resume)
+    private resumeRepository: Repository<Resume>,
+    @InjectRepository(JobApplication)
+    private jobApplicationRepository: Repository<JobApplication>
   ) {}
 
-  applyForJob() {
-    return 'This action for create a job application';
-  }
-
-  async findAllJobPost(position:string,companyname:string,technology:string) {
+  async findAllJobPost(
+    position: string,
+    companyname: string,
+    technology: string,
+  ) {
     const jobs = await this.jobRepository.find();
     let filteredjobs = jobs;
-    if(position){
-      filteredjobs = filteredjobs.filter(job => job.position === position)
+    if (position) {
+      filteredjobs = filteredjobs.filter((job) => job.position === position);
     }
-    if(companyname){
-      filteredjobs = filteredjobs.filter(job => job.companyname === companyname)
+    if (companyname) {
+      filteredjobs = filteredjobs.filter(
+        (job) => job.companyname === companyname,
+      );
     }
-    if(technology){
-      filteredjobs = filteredjobs.filter(job => job.technology === technology)
+    if (technology) {
+      filteredjobs = filteredjobs.filter(
+        (job) => job.technology === technology,
+      );
     }
     return filteredjobs;
   }
 
-  resumeUpload(filepath: string, email: string) {
-    return 'save';
+  async resumeUpload(filename: string, email: string) {
+    const fileDto = new ResumeDto();
+    fileDto.resume = filename;
+    fileDto.email = email;
+    const employee = await this.employeeRepository.findOne({
+      where: { email: email },
+    });
+    fileDto.employeeId = employee.id;
+    await this.resumeRepository.save(fileDto);
+    return { status: 200, message: 'file uploaded successfully' };
   }
 
   async craeteProfile(
@@ -56,11 +73,11 @@ export class EmployeeService {
   ) {
     createEmployeeDto.email = email;
     createEmployeeDto.name = name;
-    
-    const check = await this.employeeRepository.findOneBy({ email: email});
 
-    if(check){
-      return {ststuscode:409, message:'Profile already Created'}
+    const check = await this.employeeRepository.findOneBy({ email: email });
+
+    if (check) {
+      return { ststuscode: 409, message: 'Profile already Created' };
     }
 
     return await this.employeeRepository.save(createEmployeeDto);
@@ -72,14 +89,20 @@ export class EmployeeService {
     email: string,
     name: string,
   ) {
-    const emp = await this.employeeRepository.findOne({ where:{id: empid},relations:["education","workExperience","projects"] });
+    const emp = await this.employeeRepository.findOne({
+      where: { id: empid },
+      relations: ['education', 'workExperience', 'projects'],
+    });
 
     if (!emp) {
       throw new NotFoundException('Job not found');
     }
 
     if (emp.email !== email) {
-      return { status: 403, message: 'User have no permision to update these detail'};
+      return {
+        status: 403,
+        message: 'User have no permision to update these detail',
+      };
     }
 
     emp.name = name;
@@ -89,10 +112,18 @@ export class EmployeeService {
     if (updateEmployeeDto.education) {
       emp.education.forEach((edu, index) => {
         if (updateEmployeeDto.education[index]) {
-          if(updateEmployeeDto.education[index].course){edu.course = updateEmployeeDto.education[index].course;}
-          if(updateEmployeeDto.education[index].duration){edu.duration = updateEmployeeDto.education[index].duration;}
-          if(updateEmployeeDto.education[index].eduname){edu.eduname = updateEmployeeDto.education[index].eduname;}
-          if(updateEmployeeDto.education[index].percentage){edu.percentage = updateEmployeeDto.education[index].percentage;}
+          if (updateEmployeeDto.education[index].course) {
+            edu.course = updateEmployeeDto.education[index].course;
+          }
+          if (updateEmployeeDto.education[index].duration) {
+            edu.duration = updateEmployeeDto.education[index].duration;
+          }
+          if (updateEmployeeDto.education[index].eduname) {
+            edu.eduname = updateEmployeeDto.education[index].eduname;
+          }
+          if (updateEmployeeDto.education[index].percentage) {
+            edu.percentage = updateEmployeeDto.education[index].percentage;
+          }
         }
       });
     }
@@ -100,11 +131,24 @@ export class EmployeeService {
     if (updateEmployeeDto.workExperience) {
       emp.workExperience.forEach((woekexp, index) => {
         if (updateEmployeeDto.workExperience[index]) {
-          if(updateEmployeeDto.workExperience[index].description){woekexp.description = updateEmployeeDto.workExperience[index].description;}
-          if(updateEmployeeDto.workExperience[index].duration){woekexp.duration = updateEmployeeDto.workExperience[index].duration;}
-          if(updateEmployeeDto.workExperience[index].role){woekexp.role = updateEmployeeDto.workExperience[index].role;}
-          if(updateEmployeeDto.workExperience[index].technology){woekexp.technology = updateEmployeeDto.workExperience[index].technology;}
-          if(updateEmployeeDto.workExperience[index].workexpname){woekexp.workexpname = updateEmployeeDto.workExperience[index].workexpname;}
+          if (updateEmployeeDto.workExperience[index].description) {
+            woekexp.description =
+              updateEmployeeDto.workExperience[index].description;
+          }
+          if (updateEmployeeDto.workExperience[index].duration) {
+            woekexp.duration = updateEmployeeDto.workExperience[index].duration;
+          }
+          if (updateEmployeeDto.workExperience[index].role) {
+            woekexp.role = updateEmployeeDto.workExperience[index].role;
+          }
+          if (updateEmployeeDto.workExperience[index].technology) {
+            woekexp.technology =
+              updateEmployeeDto.workExperience[index].technology;
+          }
+          if (updateEmployeeDto.workExperience[index].workexpname) {
+            woekexp.workexpname =
+              updateEmployeeDto.workExperience[index].workexpname;
+          }
         }
       });
     }
@@ -112,21 +156,76 @@ export class EmployeeService {
     if (updateEmployeeDto.projects) {
       emp.projects.forEach((project, index) => {
         if (updateEmployeeDto.projects[index]) {
-          if(updateEmployeeDto.projects[index].description){project.description = updateEmployeeDto.projects[index].description;}
-          if(updateEmployeeDto.projects[index].duration){project.duration = updateEmployeeDto.projects[index].duration;}
-          if(updateEmployeeDto.projects[index].projectname){project.projectname = updateEmployeeDto.projects[index].projectname};
-          if(updateEmployeeDto.projects[index].links){project.links = updateEmployeeDto.projects[index].links;}
-          if(updateEmployeeDto.projects[index].technology){project.technology = updateEmployeeDto.projects[index].technology};
+          if (updateEmployeeDto.projects[index].description) {
+            project.description = updateEmployeeDto.projects[index].description;
+          }
+          if (updateEmployeeDto.projects[index].duration) {
+            project.duration = updateEmployeeDto.projects[index].duration;
+          }
+          if (updateEmployeeDto.projects[index].projectname) {
+            project.projectname = updateEmployeeDto.projects[index].projectname;
+          }
+          if (updateEmployeeDto.projects[index].links) {
+            project.links = updateEmployeeDto.projects[index].links;
+          }
+          if (updateEmployeeDto.projects[index].technology) {
+            project.technology = updateEmployeeDto.projects[index].technology;
+          }
         }
       });
     }
-    
+
     emp.location = updateEmployeeDto.location;
 
     return this.employeeRepository.save(emp);
   }
 
-  jobStatus(id: number) {
-    return `This action removes a #${id} employee`;
+  async applyForJob(jobId: string, email: string) {
+    const employee = await this.employeeRepository.findOne({where:{email:email},relations: ['appliedJobs']} );
+    const job = await this.jobRepository.findOneBy({id:jobId});
+
+    if (!employee || !job) {
+      throw new NotFoundException('Employee or Job not found.');
+    }
+
+    if (!employee.appliedJobs) {
+      employee.appliedJobs = [];
+    }
+
+    // Check if the employee has already applied to the job
+    const alreadyApplied = employee.appliedJobs.some(appliedJob => appliedJob.id === jobId);
+    if (!alreadyApplied) {
+      employee.appliedJobs.push(job);
+      await this.employeeRepository.save(employee);
+    }
+    return employee;
+  }
+
+  async allAppliedJobs(email:string){
+    const employee = await this.employeeRepository.findOne({where:{email:email},relations: ['appliedJobs']} );
+    // console.log(employee.appliedJobs);
+    return employee.appliedJobs;
+  }
+
+  async jobStatus(jobId: string,email:string) {
+    const employee = await this.employeeRepository.findOne({
+      where: { email: email },
+    });
+    const job = await this.jobRepository.findOne({ where: { id: jobId } });
+
+    if (!employee || !job) {
+      throw new NotFoundException('Employee or Job not found.');
+    }
+
+    let jobApplication = await this.jobApplicationRepository.findOne({
+      where: { employee:{ id: employee.id }, job: { id: job.id } },
+    });
+    
+    if(!jobApplication){
+      return "your job application is under review"
+    }
+    else if(jobApplication.accepted){
+      return `your job application is ${jobApplication.accepted}`;
+    }
   }
 }

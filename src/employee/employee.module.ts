@@ -8,10 +8,12 @@ import { Projects} from './entities/projects.entity';
 import { WorkExperience } from './entities/workexperience.entity';
 import { EmployerModule } from 'src/employer/employer.module';
 import { Job } from 'src/employer/entities/job.entity';
+import { Resume } from './entities/resume.entity';
+import { JobApplication } from './entities/jobapplication.entity';
 
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Education,Projects,Employee,WorkExperience,Job]),EmployerModule],
+  imports:[TypeOrmModule.forFeature([Education,Projects,Employee,WorkExperience,Job,Resume,JobApplication]),EmployerModule],
   controllers: [EmployeeController],
   providers: [EmployeeService]
 
