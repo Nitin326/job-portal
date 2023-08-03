@@ -30,7 +30,7 @@ export class UserService {
       const user = await this.userRepository.findOneBy({email: email});
       if(!user){
         await this.userRepository.save(newDto);
-        return { status: 201, message: 'User Registered Successfully' };
+        return { status: 201, message: 'User Registered Successfully'};
       }
       return { status: 403, message: 'Email Already Exist' };
     } catch (err) {

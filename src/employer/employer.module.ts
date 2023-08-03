@@ -6,11 +6,10 @@ import { Job } from './entities/job.entity';
 import { Employee } from 'src/employee/entities/employee.entity';
 import { JobApplication } from 'src/employee/entities/jobapplication.entity';
 
-
 @Module({
-  imports:[TypeOrmModule.forFeature([Job,Employee,JobApplication])],
+  imports: [TypeOrmModule.forFeature([Job, Employee, JobApplication])],
   controllers: [EmployerController],
   providers: [EmployerService],
-  exports: [EmployerService]
+  exports: [EmployerService],
 })
 export class EmployerModule {}

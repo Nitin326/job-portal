@@ -29,7 +29,8 @@ export class EmployerService {
     newDto.yearofexp = jobDto.yearofexp;
     newDto.technology = jobDto.technology;
 
-    return await this.jobRepository.save(newDto);
+    const response = await this.jobRepository.save(newDto);
+    return { status: 200, message: 'Job is successfully created', data: response };
   }
 
   async updatejob(
@@ -50,15 +51,28 @@ export class EmployerService {
     }
 
     job.name = name;
-    job.email = updateJobDto.email;
-    job.description = updateJobDto.description;
-    job.companyname = updateJobDto.companyname;
-    job.phone = updateJobDto.phone;
-    job.position = updateJobDto.position;
-    job.yearofexp = updateJobDto.yearofexp;
-    job.technology = updateJobDto.technology;
+    job.email = email;
+    if (updateJobDto.description) {
+      job.description = updateJobDto.description;
+    }
+    if (updateJobDto.companyname) {
+      job.companyname = updateJobDto.companyname;
+    }
+    if (updateJobDto.phone) {
+      job.phone = updateJobDto.phone;
+    }
+    if (updateJobDto.position) {
+      job.position = updateJobDto.position;
+    }
+    if (updateJobDto.yearofexp) {
+      job.yearofexp = updateJobDto.yearofexp;
+    }
+    if (updateJobDto.technology) {
+      job.technology = updateJobDto.technology;
+    }
 
-    return await this.jobRepository.save(job);
+    const response = await this.jobRepository.save(job);
+    return { status: 200, message: 'Job updated successfully', data: response };
   }
 
   async removejob(jobId: string, email: string) {
@@ -70,13 +84,19 @@ export class EmployerService {
 
     if (job.email === email) {
       await this.jobRepository.remove(job);
+      return { status: 200, message: 'job deleted successfully' };
     } else {
       return { status: 403, message: 'Unable to access job' };
     }
   }
 
   async allJobs(email: string) {
-    return await this.jobRepository.find({ where: { email: email } });
+    const response = await this.jobRepository.find({ where: { email: email } });
+    return {
+      status: 200,
+      message: 'All jobs created by employer listed here',
+      data: response,
+    };
   }
 
   async getJob(jobId: string, email: string) {
@@ -89,7 +109,8 @@ export class EmployerService {
     if (job.email !== email) {
       return { status: 403, message: 'Unable to access job' };
     }
-    return job;
+    const response = job;
+    return { status: 200, message: 'Employer Requested Job', data: response };
   }
 
   async acceptproposal(jobId: string, empId: string) {
@@ -119,6 +140,7 @@ export class EmployerService {
 
     jobApplication.accepted = true;
     await this.jobApplicationRepository.save(jobApplication);
+    return { status: 200, message: 'jobApplication is accepted'}
   }
 
   async proposalview(jobid: string, email: string) {
@@ -126,6 +148,11 @@ export class EmployerService {
       where: { id: jobid },
       relations: ['employee'],
     });
-    return job.employee;
+    const response = job.employee;
+    return {
+      status: 200,
+      message: 'All employess listed apllied in this job',
+      data: response,
+    };
   }
 }

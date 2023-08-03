@@ -13,11 +13,9 @@ import { ProjectsDto } from './projects.dto';
 
 export class CreateEmployeeDto {
 
-  @IsString()
   @Exclude()
   name: string;
 
-  @IsEmail()
   @Exclude()
   email: string;
 

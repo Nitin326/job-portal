@@ -79,11 +79,11 @@ export class EmployeeController {
     );
   }
 
-  @Post('apply/:id')
-  applyForJob(@Param('id') id: string, @Req() req : Request) {
+  @Post('apply/:jobid')
+  applyForJob(@Param('jobid') jobid: string, @Req() req : Request) {
     const user: any = req.user;
     const email = user.email;
-    return this.employeeService.applyForJob(id,email);
+    return this.employeeService.applyForJob(jobid,email);
   }
 
   @Post('resume')
@@ -124,10 +124,10 @@ export class EmployeeController {
     return this.employeeService.allAppliedJobs(email);
   }
 
-  @Get('jobstatus/:id')
-  jobStatus(@Param('empid') empid: string, @Req() req: Request) {
+  @Get('jobstatus/:jobid')
+  jobStatus(@Param('Jobid') jobid: string, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
-    return this.employeeService.jobStatus(empid,email);
+    return this.employeeService.jobStatus(jobid,email);
   }
 }

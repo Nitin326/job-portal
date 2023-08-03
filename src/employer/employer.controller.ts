@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { EmployerService } from './employer.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import {JobDto } from './dto/job.dto';
-import {JwtAuthGuard}  from '../auth/auth.guard';
+import { JobDto } from './dto/job.dto';
+import { JwtAuthGuard } from '../auth/auth.guard';
 import { RoleGuard } from 'src/auth/role.guard';
 import Role from 'src/constant';
-import {Request} from 'express'
+import { Request } from 'express';
 import { UpdateJobDto } from './dto/updatejob.dto';
 
 @Controller('employeer')
@@ -15,28 +25,31 @@ import { UpdateJobDto } from './dto/updatejob.dto';
 export class EmployerController {
   constructor(private readonly employerService: EmployerService) {}
 
-
   @Post('job')
   createjob(@Body() jobDto: JobDto, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
     const name = user.name;
-    return this.employerService.createjob(jobDto,email,name);
+    return this.employerService.createjob(jobDto, email, name);
   }
 
   @Patch('job/:id')
-  updatejob(@Param('id') jobid: string,@Body() updateJobDto: UpdateJobDto, @Req() req: Request) {
+  updatejob(
+    @Param('id') jobid: string,
+    @Body() updateJobDto: UpdateJobDto,
+    @Req() req: Request,
+  ) {
     const user: any = req.user;
     const email = user.email;
     const name = user.name;
-    return this.employerService.updatejob(updateJobDto,jobid,email,name);
+    return this.employerService.updatejob(updateJobDto, jobid, email, name);
   }
 
   @Delete('job/:id')
-  removejob(@Param('id') id: string,@Req() req: Request) {
+  removejob(@Param('id') id: string, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
-    return this.employerService.removejob(id,email);
+    return this.employerService.removejob(id, email);
   }
 
   @Get('alljob')
@@ -50,18 +63,18 @@ export class EmployerController {
   getJob(@Req() req: Request, @Param('id') id: string) {
     const user: any = req.user;
     const email = user.email;
-    return this.employerService.getJob(id,email);
+    return this.employerService.getJob(id, email);
   }
 
   @Post('job/accept/:jobId/:empId')
-  acceptproposal(@Param('jobId') jobid: string,@Param('empId') empid: string) {
-    return this.employerService.acceptproposal(jobid,empid);
+  acceptproposal(@Param('jobId') jobid: string, @Param('empId') empid: string) {
+    return this.employerService.acceptproposal(jobid, empid);
   }
 
   @Get('job/status/:id')
-  proposalview(@Param('id') id: string,@Req() req: Request) {
+  proposalview(@Param('id') id: string, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
-    return this.employerService.proposalview(id,email);
+    return this.employerService.proposalview(id, email);
   }
 }

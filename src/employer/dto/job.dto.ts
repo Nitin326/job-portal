@@ -4,13 +4,9 @@ import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class JobDto {
 
-    @IsString()
-    @IsNotEmpty()
     @Exclude()
     name : string;
 
-    @IsEmail()
-    @IsNotEmpty()
     @Exclude()
     email : string;
 

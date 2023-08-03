@@ -13,11 +13,9 @@ import { ProjectsDto } from './projects.dto';
 
 export class UpdateEmployeeDto {
 
-  @IsString()
   @Exclude()
   name: string;
 
-  @IsEmail()
   @Exclude()
   email: string;
 
