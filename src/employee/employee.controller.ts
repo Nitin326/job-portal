@@ -125,7 +125,7 @@ export class EmployeeController {
   }
 
   @Get('jobstatus/:jobid')
-  jobStatus(@Param('Jobid') jobid: string, @Req() req: Request) {
+  jobStatus(@Param('jobid') jobid: string, @Req() req: Request) {
     const user: any = req.user;
     const email = user.email;
     return this.employeeService.jobStatus(jobid,email);

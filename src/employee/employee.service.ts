@@ -210,18 +210,22 @@ export class EmployeeService {
   }
 
   async jobStatus(jobId: string,email:string) {
+
     const employee = await this.employeeRepository.findOne({
-      where: { email: email },
+      where: { email: email }
     });
-    const job = await this.jobRepository.findOne({ where: { id: jobId } });
+
+    const job = await this.jobRepository.findOneBy({ id: jobId });
 
     if (!employee || !job) {
       throw new NotFoundException('Employee or Job not found.');
     }
 
     let jobApplication = await this.jobApplicationRepository.findOne({
-      where: { employee:{ id: employee.id }, job: { id: job.id } },
+      where: { employee:{ id: employee.id }, job: { id: jobId } }
     });
+
+    // console.log(jobApplication)
     
     if(!jobApplication){
       return {status:200,message:"your job application is under review"}

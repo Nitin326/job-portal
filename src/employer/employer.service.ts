@@ -114,9 +114,11 @@ export class EmployerService {
   }
 
   async acceptproposal(jobId: string, empId: string) {
+
     const employee = await this.employeeRepository.findOne({
-      where: { id: empId },
+      where: { id: empId }
     });
+
     const job = await this.jobRepository.findOne({ where: { id: jobId } });
 
     if (!employee || !job) {
@@ -124,7 +126,7 @@ export class EmployerService {
     }
 
     let jobApplication = await this.jobApplicationRepository.findOne({
-      where: { employee: { id: empId }, job: { id: job.id } },
+      where: { employee: { id: empId }, job: { id: jobId } },
     });
 
     if (!jobApplication) {
