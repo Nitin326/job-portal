@@ -27,7 +27,7 @@ export class EmployeeService {
     @InjectRepository(Resume)
     private resumeRepository: Repository<Resume>,
     @InjectRepository(JobApplication)
-    private jobApplicationRepository: Repository<JobApplication>
+    private jobApplicationRepository: Repository<JobApplication>,
   ) {}
 
   async craeteProfile(
@@ -44,7 +44,11 @@ export class EmployeeService {
       return { ststuscode: 409, message: 'Profile already Created' };
     }
     const response = await this.employeeRepository.save(createEmployeeDto);
-    return {status:200, message:'Profile is creadted successfully', data:response}
+    return {
+      status: 200,
+      message: 'Profile is creadted successfully',
+      data: response,
+    };
   }
 
   async updateProfile(
@@ -140,7 +144,7 @@ export class EmployeeService {
     }
 
     emp.location = updateEmployeeDto.location;
-    
+
     const response = this.employeeRepository.save(emp);
     return { status: 200, message: 'Job updated successfully', data: response };
   }
@@ -149,39 +153,54 @@ export class EmployeeService {
     position: string,
     companyname: string,
     technology: string,
+    paginate:number
   ) {
-    const jobs = await this.jobRepository.find();
+    const page = 1;
+    const itemsPerPage = paginate || 10;
+
+    const skip = (page - 1) * itemsPerPage;
+    const take = itemsPerPage;
+
     let filteredjobs = [];
     if (position) {
       const filteredbyposition = await this.jobRepository.find({
         where: {
           position: position,
-        }
-      })
-      filteredjobs.push(filteredbyposition)
+        },
+      });
+      filteredjobs.push(filteredbyposition);
     }
     if (companyname) {
       const filteredbycompanyname = await this.jobRepository.find({
         where: {
           companyname: companyname,
-        }
-      })
-      filteredjobs.push(filteredbycompanyname)
+        },
+      });
+      filteredjobs.push(filteredbycompanyname);
     }
     if (technology) {
       const filteredbytechnology = await this.jobRepository.find({
         where: {
           technology: technology,
-        }
-      })
-      filteredjobs.push(filteredbytechnology)
+        },
+      });
+      filteredjobs.push(filteredbytechnology);
     }
 
-    if(filteredjobs.length > 0) {
-      const response = filteredjobs.flat();
-      return { status: 200, message: 'All Job Post Listed Here', data: response };
+    if (filteredjobs.length > 0) {
+      let paginatedJobPosts = filteredjobs.flat();
+      const response = paginatedJobPosts.slice(skip, skip + take);
+      return {
+        status: 200,
+        message: 'All Job Post Listed Here',
+        data: response,
+      };
     }
-    return { status: 200, message: 'All Job Post Listed Here', data: jobs };
+    const paginatedJobPosts = await this.jobRepository.find({
+      skip: skip,
+      take: take,
+    });
+    return { status: 200, message: 'All Job Post Listed Here', data: paginatedJobPosts };
   }
 
   async resumeUpload(filename: string, email: string) {
@@ -197,8 +216,11 @@ export class EmployeeService {
   }
 
   async applyForJob(jobId: string, email: string) {
-    const employee = await this.employeeRepository.findOne({where:{email:email},relations: ['appliedJobs']} );
-    const job = await this.jobRepository.findOneBy({id:jobId});
+    const employee = await this.employeeRepository.findOne({
+      where: { email: email },
+      relations: ['appliedJobs'],
+    });
+    const job = await this.jobRepository.findOneBy({ id: jobId });
 
     if (!employee || !job) {
       throw new NotFoundException('Employee or Job not found.');
@@ -208,25 +230,37 @@ export class EmployeeService {
       employee.appliedJobs = [];
     }
 
-    const alreadyApplied = employee.appliedJobs.some(appliedJob => appliedJob.id === jobId);
+    const alreadyApplied = employee.appliedJobs.some(
+      (appliedJob) => appliedJob.id === jobId,
+    );
     if (!alreadyApplied) {
       employee.appliedJobs.push(job);
       await this.employeeRepository.save(employee);
     }
     const response = employee;
-    return { status: 200, message: 'Successfully Applied in the job', data: response };;
+    return {
+      status: 200,
+      message: 'Successfully Applied in the job',
+      data: response,
+    };
   }
 
-  async allAppliedJobs(email:string){
-    const employee = await this.employeeRepository.findOne({where:{email:email},relations: ['appliedJobs']} );
-    const response = employee.appliedJobs;
-    return { status: 200, message: 'All Applied Jobs listed here', data: response };;
-  }
-
-  async jobStatus(jobId: string,email:string) {
-
+  async allAppliedJobs(email: string) {
     const employee = await this.employeeRepository.findOne({
-      where: { email: email }
+      where: { email: email },
+      relations: ['appliedJobs'],
+    });
+    const response = employee.appliedJobs;
+    return {
+      status: 200,
+      message: 'All Applied Jobs listed here',
+      data: response,
+    };
+  }
+
+  async jobStatus(jobId: string, email: string) {
+    const employee = await this.employeeRepository.findOne({
+      where: { email: email },
     });
 
     const job = await this.jobRepository.findOneBy({ id: jobId });
@@ -236,16 +270,18 @@ export class EmployeeService {
     }
 
     let jobApplication = await this.jobApplicationRepository.findOne({
-      where: { employee:{ id: employee.id }, job: { id: jobId } }
+      where: { employee: { id: employee.id }, job: { id: jobId } },
     });
 
     // console.log(jobApplication)
-    
-    if(!jobApplication){
-      return {status:200,message:"your job application is under review"}
-    }
-    else if(jobApplication.accepted){
-      return {status:200,message:`your job application is ${jobApplication.accepted}`};
+
+    if (!jobApplication) {
+      return { status: 200, message: 'your job application is under review' };
+    } else if (jobApplication.accepted) {
+      return {
+        status: 200,
+        message: `your job application is ${jobApplication.accepted}`,
+      };
     }
   }
 }

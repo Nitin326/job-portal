@@ -66,16 +66,19 @@ export class EmployeeController {
   @ApiQuery({ name: 'position', required: false, type: String })
   @ApiQuery({ name: 'companyname', required: false, type: String })
   @ApiQuery({ name: 'technology', required: false, type: String })
+  @ApiQuery({ name: 'paginate', required: false, type: Number })
   @Get('alljobs')
   findAllJobPost(
     @Query('position') position: string,
     @Query('companyname') companyname: string,
     @Query('technology') technology: string,
+    @Query('paginate') paginate: number,
   ) {
     return this.employeeService.findAllJobPost(
       position,
       companyname,
       technology,
+      paginate
     );
   }
 
