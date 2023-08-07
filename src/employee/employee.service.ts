@@ -151,23 +151,37 @@ export class EmployeeService {
     technology: string,
   ) {
     const jobs = await this.jobRepository.find();
-    let filteredjobs = jobs;
+    let filteredjobs = [];
     if (position) {
-      filteredjobs = filteredjobs.filter((job) => job.position === position);
+      const filteredbyposition = await this.jobRepository.find({
+        where: {
+          position: position,
+        }
+      })
+      filteredjobs.push(filteredbyposition)
     }
     if (companyname) {
-      filteredjobs = filteredjobs.filter(
-        (job) => job.companyname === companyname,
-      );
+      const filteredbycompanyname = await this.jobRepository.find({
+        where: {
+          companyname: companyname,
+        }
+      })
+      filteredjobs.push(filteredbycompanyname)
     }
     if (technology) {
-      filteredjobs = filteredjobs.filter(
-        (job) => job.technology === technology,
-      );
+      const filteredbytechnology = await this.jobRepository.find({
+        where: {
+          technology: technology,
+        }
+      })
+      filteredjobs.push(filteredbytechnology)
     }
-    
-    const response = filteredjobs;
-    return { status: 200, message: 'All Job Post Listed Here', data: response };
+
+    if(filteredjobs.length > 0) {
+      const response = filteredjobs.flat();
+      return { status: 200, message: 'All Job Post Listed Here', data: response };
+    }
+    return { status: 200, message: 'All Job Post Listed Here', data: jobs };
   }
 
   async resumeUpload(filename: string, email: string) {
